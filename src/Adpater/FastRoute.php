@@ -4,11 +4,8 @@ namespace EquivRoute\Adpater;
 
 use FastRoute\Dispatcher\GroupCountBased as Dispatcher;
 
-class FastRoute
+class FastRoute extends _Abstract
 {
-    public $routeCollector = null;
-    public $dispatcher = null;
-
     public function __construct($options = [], $routes = [])
     {
         $this->routes = $routes;
@@ -24,26 +21,6 @@ class FastRoute
         }
     }
 
-    public function callback(\FastRoute\RouteCollector $r, $routes = [])
-    {
-        # print_r($r);
-        if (is_array($routes)) {
-            foreach ($routes as $route) {
-                $r->addRoute($route[0], $route[1], $route[2]);
-            }
-        }
-    }
-
-    public function addRoute($httpMethod, $route, $handler)
-    {
-        $this->routeCollector->addRoute($httpMethod, $route, $handler);
-    }
-
-    public function getData()
-    {
-        return $this->routeCollector->getData();
-    }
-
     public function dispatcher($data = null)
     {
         if (null === $data) {
@@ -54,10 +31,5 @@ class FastRoute
             $data = $this->getData();
         }
         return $this->dispatcher = new Dispatcher($data);
-    }
-
-    public function dispatch($httpMethod, $uri)
-    {
-        return $this->routeInfo = $this->dispatcher->dispatch($httpMethod, $uri);
     }
 }
