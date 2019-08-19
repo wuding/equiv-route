@@ -39,6 +39,15 @@ class Dispatcher
 
         $result = $uri;
         $index = null;
+        // 忽略域名
+        $ignore = isset($PATH['^']) ? $PATH['^'] : null;
+        if ($ignore) {
+            $ignore = is_array($ignore) ? $ignore : preg_split('/[\s,]+/', $ignore);
+            if (in_array($_SERVER['HTTP_HOST'], $ignore)) {
+                return $result;
+            }
+        }
+
         // URI 长度
         $paths = isset($PATH[$len]) ? $PATH[$len] : null;
         if ($paths) {
