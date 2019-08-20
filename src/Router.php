@@ -53,6 +53,10 @@ class Router
 
     public function dispatch($httpMethod, $uri)
     {
+        if (false !== $pos = strpos($uri, '?')) {
+            $uri = substr($uri, 0, $pos);
+        }
+        $uri = rawurldecode($uri);
         return $this->adpater->dispatch($httpMethod, $uri);
     }
 }
