@@ -11,7 +11,7 @@ class Dispatcher
 
     public function dispatch($httpMethod, $uri, $status = 1)
     {
-        # print_r(get_defined_vars());
+        $uri = $this->uriEncode($uri);
 
         $uri = $this->virtualPath($uri);
         if (!is_numeric($uri)) {
@@ -151,5 +151,16 @@ class Dispatcher
             # echo __FILE__, PHP_EOL;exit;
         }
         return $result;
+    }
+
+    public function uriEncode($uri)
+    {
+        $len = mb_strlen($uri);
+        if (false !== $pos = strpos($uri, '$')) {
+            $start = mb_substr($uri, 0, $pos);
+            $end = mb_substr($uri, $pos + 1, $len);
+            $uri = "$start\$" . rawurlencode($end);
+        }
+        return $uri;
     }
 }
