@@ -110,7 +110,7 @@ class Dispatcher
                     foreach ($val as $suffix => $v) {
                         foreach ($v as $k => $project) {
                             if (is_numeric($k)) {
-                                $k = $project . '.loc.urlnk.com';
+                                $k = $project . $domain;
                             }
                             $file = $prefix . $project . $suffix;
                             # echo $file . PHP_EOL;
