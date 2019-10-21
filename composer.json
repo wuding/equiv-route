@@ -1,0 +1,11 @@
+{
+    "name": "wuding/equiv-route",
+    "require": {
+        "php": ">=5.4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "EquivRoute\\": "src"
+        }
+    }
+}
