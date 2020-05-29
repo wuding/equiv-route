@@ -29,8 +29,8 @@ class _Abstract
 
     
 
-    public function dispatch($httpMethod, $uri)
+    public function dispatch($httpMethod, $uri, $status = -3)
     {
-        return $this->routeInfo = $this->dispatcher->dispatch($httpMethod, $uri);
+        return $this->routeInfo = $this->dispatcher->dispatch($httpMethod, $uri, $status);
     }
 }
