@@ -13,4 +13,10 @@ class RouteCollector
     {
         return [];
     }
+
+    public function addRoute($httpMethod = '', $route = '', $handler = '')
+    {
+        global $_ROUTE;
+        $_ROUTE[] = array($httpMethod, $route, $handler);
+    }
 }
