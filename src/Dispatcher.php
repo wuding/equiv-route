@@ -4,30 +4,93 @@ namespace EquivRoute;
 
 class Dispatcher
 {
+    public $num = 0;
+
     public function __construct()
     {
 
     }
 
-    public function dispatch($httpMethod, $uri, $status = 1)
+    public function dispatch($httpMethod, $uri, $status = -1)
     {
+        global $_ROUTE;
         $uri = $this->uriEncode($uri);
-
         $uri = $this->virtualPath($uri);
         if (!is_numeric($uri)) {
             $uri = $this->virtualHost($uri);
+        }
+
+        $vars = array();
+        foreach ($_ROUTE as $row) {
+            $row[0] = is_array($row[0]) ? $row[0] : array($row[0]);
+            $rule = preg_replace('/\//', '\/', $row[1]);
+            $rule = $this->regExp($rule);
+            if (in_array($httpMethod, $row[0])) {
+                if (!is_string($uri)) {
+                    print_r($uri);exit;
+                }
+                if (preg_match('/' . $rule . '/i', $uri, $matches)) {
+                    $status = 1;
+                    $uri = $row[2];
+                    foreach ($matches as $key => $value) {
+                        if (!is_numeric($key)) {
+                            $vars[$key] = $value;
+                        }
+                    }
+                }
+            }
         }
 
         # $status = 0;
         $result = array($status);
         if (1 === $status) {
             $result[1] = $uri;
-            $result[2] = array();
+            $result[2] = $vars;
 
         } elseif (2 === $status) {
             $result[1] = array();
         }
         return $result;
+    }
+
+    public function regExp($rule)
+    {
+        $this->num++;
+        $num = $this->num;
+        $rl = '';
+        if (preg_match('/\[.*\]/', $rule, $matches)) {
+            $rule = preg_replace('/\[.*\]/', '__RULE'. $num .'__', $rule, 1);
+            $vl = preg_replace('/\[/', '', $matches[0], 1);
+            $vl = preg_replace('/\]/', '', $vl, 1);
+            $rl = $this->regExp($vl);
+        }
+
+        if (preg_match_all('/\{[^\{]+\}/i', $rule, $matches)) {
+            foreach ($matches[0] as $key => $value) {
+                $val = preg_replace('/{|}/', '', $value);
+                $vs = preg_replace('/\\\/', '\\\\\\\\', $val);
+                $vs = preg_replace('/\+/', '\\\\+', $vs);
+                $exp = explode(':', $vs);
+                $ex = explode(':', $val);
+                $count = count($exp);
+                $name = array_shift($exp);
+                $p = "($name)";
+                $r = $ru = '[^\/]+';
+                if (1 < $count) {
+                    $ru = array_shift($exp);
+                    $r = array_pop($ex);
+                    $p .= ':' . $ru;
+                }
+                $replace = '(?P<\1>' . $r . ')';
+                $rule = preg_replace('/{'. $p .'}/i', $replace, $rule);
+            }
+        }
+
+        if ($rl) {
+            $rule = preg_replace('/__RULE'. $num .'__/', '('. $rl .'|.*)', $rule);
+
+        }
+        return $rule;
     }
 
     public function virtualPath($uri)
