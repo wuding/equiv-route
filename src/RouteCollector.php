@@ -16,7 +16,7 @@ class RouteCollector
 
     public function addRoute($httpMethod = '', $route = '', $handler = '')
     {
-        global $_ROUTE;
-        $_ROUTE[] = array($httpMethod, $route, $handler);
+        global $_EQUIV_ROUTE;
+        $_EQUIV_ROUTE[] = array($httpMethod, $route, $handler);
     }
 }

@@ -13,25 +13,32 @@ class Dispatcher
 
     public function dispatch($httpMethod, $uri, $status = -1)
     {
-        global $_ROUTE;
+        global $_EQUIV_ROUTE;
+        $_EQUIV_ROUTE = is_array($_EQUIV_ROUTE) ? $_EQUIV_ROUTE : array();
+        // 全局变量不要冲突，使用独有特征
+
         $uri = $this->uriEncode($uri);
         $uri = $this->virtualPath($uri);
-        if (!is_numeric($uri)) {
+        $uris = array();
+        if (is_array($uri)) {
+            // 使用肯定语气
+            return $result = array($status, $uri, []);
+
+        } else {
             $uri = $this->virtualHost($uri);
         }
 
         $vars = array();
-        foreach ($_ROUTE as $row) {
+        foreach ($_EQUIV_ROUTE as $row) {
             $row[0] = is_array($row[0]) ? $row[0] : array($row[0]);
             $rule = preg_replace('/\//', '\/', $row[1]);
             $rule = $this->regExp($rule);
             if (in_array($httpMethod, $row[0])) {
                 if (!is_string($uri)) {
-                    print_r($uri);exit;
+                    print_r(array($uri, __FILE__, __LINE__));exit;
                 }
                 if (preg_match('/' . $rule . '/i', $uri, $matches)) {
-                    $status = 1;
-                    $uri = $row[2];
+                    $uris[] = $row[2];
                     foreach ($matches as $key => $value) {
                         if (!is_numeric($key)) {
                             $vars[$key] = $value;
@@ -42,6 +49,10 @@ class Dispatcher
         }
 
         # $status = 0;
+        if ($uris) {
+            $status = 1;
+            $uri = array_pop($uris);
+        }
         $result = array($status);
         if (1 === $status) {
             $result[1] = $uri;
@@ -134,9 +145,9 @@ class Dispatcher
         }
 
         if ($index) {
-            $result = include $index;
+            // 不留后路，回头路退步可不好，但是要可追溯，留下文件行
+            $result = array($uri, $index, __FILE__, __LINE__);
         }
-        # print_r(get_defined_vars());
         return $result;
     }
 
