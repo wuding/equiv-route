@@ -148,6 +148,7 @@ class Dispatcher
             // 不留后路，回头路退步可不好，但是要可追溯，留下文件行
             $include =  include $index;
             if (false !== $include) {
+                exit;
                 $result = array($uri, $index, __FILE__, __LINE__);
             }
         }
