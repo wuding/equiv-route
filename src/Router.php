@@ -4,6 +4,7 @@ namespace EquivRoute;
 
 class Router
 {
+    const VERSION = '20.213.101';
     public $adpater = null;
     public static $uri = '';
 
