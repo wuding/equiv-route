@@ -2,6 +2,8 @@
 
 namespace EquivRoute;
 
+use model\Glob;
+
 class Dispatcher
 {
     public $num = 0;
@@ -106,8 +108,7 @@ class Dispatcher
 
     public function virtualPath($uri)
     {
-        global $_CONFIG;
-        $PATH = $_CONFIG['virtual_paths'];
+        $PATH = Glob::conf('virtual_paths');
         $str = ltrim($uri, '/');
         $len = mb_strlen($str);
 
@@ -157,9 +158,8 @@ class Dispatcher
 
     public function virtualHost($uri)
     {
-        global $_CONFIG;
-        $HOST = $_CONFIG['virtual_hosts'];
-        $domain = $_CONFIG['host_domain'];
+        $HOST = Glob::conf('virtual_hosts');
+        $domain = Glob::conf('host_domain');
 
         // 自定义主机名
         $http_host = parse_url('//' . $_SERVER['HTTP_HOST'], PHP_URL_HOST);
