@@ -160,10 +160,12 @@ class Dispatcher
     {
         $HOST = Glob::conf('virtual_hosts');
         $domain = Glob::conf('host_domain');
+        $srv_host = $_SERVER['HTTP_HOST'] ?? null;
+        $request_uri = $_SERVER['REQUEST_URI'] ?? null;
 
         // 自定义主机名
-        $http_host = parse_url('//' . $_SERVER['HTTP_HOST'], PHP_URL_HOST);
-        if (preg_match('/^\/php(|\/|\/.*)/i', $_SERVER['REQUEST_URI'])) {
+        $http_host = parse_url('//'. $srv_host, PHP_URL_HOST);
+        if (preg_match('/^\/php(|\/|\/.*)/i', $request_uri)) {
             $http_host = 'ariesphp.loc.urlnk.com';
         }
         if (isset($_GET['http_host'])) {
